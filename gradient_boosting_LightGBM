@@ -1,0 +1,104 @@
+#include <iostream>
+#include <vector>
+#include <lightgbm/c_api.h>
+
+int main() {
+    // Загрузка данных (X - признаки, y - метки классов)
+    std::vector<std::vector<double>> X = { { ... }, { ... }, ... };  // Заменить на реальные данные
+    std::vector<double> y = { ... };  // Заменить на реальные метки
+
+    // Создание датасета LightGBM
+    int num_data = X.size();
+    int num_features = X[0].size();
+
+    double** data = new double*[num_features];
+    for (int i = 0; i < num_features; ++i) {
+        data[i] = new double[num_data];
+    }
+
+    for (int i = 0; i < num_data; ++i) {
+        for (int j = 0; j < num_features; ++j) {
+            data[j][i] = X[i][j];
+        }
+    }
+
+    // Создание вектора меток
+    double* labels = new double[num_data];
+    for (int i = 0; i < num_data; ++i) {
+        labels[i] = y[i];
+    }
+
+    // Создание конфигурации градиентного бустинга
+    const char* parameters = "objective=binary";
+    const char* train_set_name = "train_set";
+
+    // Создание датасета LightGBM
+    LGBM_DatasetCreateFromMat(data, labels, num_data, num_features, 0, &train_set);
+
+    // Создание задачи градиентного бустинга
+    LGBM_DatasetCreateFromMat(data, labels, num_data, num_features, 0, &train_set);
+
+    // Создание вектора меток
+    double* labels = new double[num_data];
+    for (int i = 0; i < num_data; ++i) {
+        labels[i] = y[i];
+    }
+
+    // Создание конфигурации градиентного бустинга
+    const char* parameters = "objective=binary";
+
+    // Создание датасета LightGBM
+    LGBM_DatasetCreateFromMat(data, labels, num_data, num_features, 0, &train_set);
+
+    // Создание задачи градиентного бустинга
+    LGBM_DatasetCreateFromMat(data, labels, num_data, num_features, 0, &train_set);
+
+    // Создание модели градиентного бустинга
+    LGBM_BoosterHandle booster;
+    LGBM_BoosterCreate(train_set, parameters, &booster);
+
+    // Обучение модели
+    int num_iterations = 100;
+    for (int i = 0; i < num_iterations; ++i) {
+        LGBM_BoosterUpdateOneIter(booster);
+    }
+
+    // Сохранение модели
+    const char* model_filename = "model.txt";
+    LGBM_BoosterSaveModel(booster, 0, -1, model_filename);
+
+    // Загрузка модели
+    LGBM_BoosterLoadModel(booster, 0, model_filename);
+
+    // Предсказание на новых данных
+    std::vector<double> new_data = { ... };  // Заменить на реальные данные
+    int num_new_data = 1;
+    double** new_data_ptr = new double*[num_features];
+    for (int i = 0; i < num_features; ++i) {
+        new_data_ptr[i] = new double[num_new_data];
+        new_data_ptr[i][0] = new_data[i];
+    }
+
+    double* predictions = nullptr;
+    LGBM_BoosterPredictForMat(booster, new_data_ptr, num_new_data, num_features, 0, 0, &predictions);
+
+    // Вывод предсказаний
+    for (int i = 0; i < num_new_data; ++i) {
+        std::cout << "Prediction for data point " << i << ": " << predictions[i] << std::endl;
+    }
+
+    // Освобождение ресурсов
+    LGBM_DatasetFree(train_set);
+    LGBM_BoosterFree(booster);
+
+    for (int i = 0; i < num_features; ++i) {
+        delete[] data[i];
+        delete[] new_data_ptr[i];
+    }
+    delete[] data;
+    delete[] labels;
+    delete[] new_data_ptr;
+    delete[] predictions;
+
+    return 0;
+}
