@@ -1,0 +1,54 @@
+Конечно! Вот пример кода на Python для выполнения 3-fold кросс-валидации:
+
+```python
+from sklearn.model_selection import KFold
+
+# Загрузка данных (X - признаки, y - метки классов)
+X = np.array([[...], [...], ...])  # Заменить на реальные данные
+y = np.array([...])  # Заменить на реальные метки
+
+# Создание модели (tree - экземпляр класса DecisionTree)
+tree = DecisionTree(max_depth=5)
+
+# Определение количества фолдов
+k = 3
+
+# Создание объекта KFold для разделения данных на фолды
+kf = KFold(n_splits=k)
+
+# Списки для сохранения результатов метрик
+accuracies = []
+false_positive_rates = []
+
+# Выполнение кросс-валидации
+for train_index, val_index in kf.split(X):
+    # Разделение данных на обучающую и валидационную выборки
+    X_train, X_val = X[train_index], X[val_index]
+    y_train, y_val = y[train_index], y[val_index]
+
+    # Обучение модели на обучающей выборке
+    tree.fit(X_train, y_train)
+
+    # Классификация валидационной выборки
+    y_pred = tree.predict(X_val)
+
+    # Вычисление метрик
+    accuracy = accuracy_score(y_val, y_pred)
+    false_positive_rate = false_positive_rate_score(y_val, y_pred)
+
+    # Сохранение результатов
+    accuracies.append(accuracy)
+    false_positive_rates.append(false_positive_rate)
+
+# Вычисление средних значений метрик
+mean_accuracy = np.mean(accuracies)
+mean_false_positive_rate = np.mean(false_positive_rates)
+
+# Вывод результатов
+print("Mean Accuracy:", mean_accuracy)
+print("Mean False Positive Rate:", mean_false_positive_rate)
+```
+
+#В этом коде используется библиотека `scikit-learn`, которая предоставляет класс `KFold` для выполнения кросс-валидации. При выполнении цикла `for` происходит разделение данных на обучающую и валидационную выборки на каждой итерации, и модель обучается на обучающей выборке, а затем классифицирует валидационную выборку. Затем вычисляются метрики для каждого фолда и сохраняются в соответствующие списки. В конце цикла вычисляются средние значения метрик для всех фолдов и выводятся на экран.
+
+#В коде необходимо заменить заглушки `...` на реальные данные и метки, а также определить функции `accuracy_score` и `false_positive_rate_score`, которые вычисляют соответствующие метрики для оценки модели.
